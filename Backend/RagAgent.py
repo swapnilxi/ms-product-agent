@@ -189,7 +189,6 @@ async def main():
     indexer = SimpleDocumentIndexer(doc_memory)
     sources = [
         "https://raw.githubusercontent.com/microsoft/autogen/main/README.md",
-        "https://desichessfactory.in"
         # Add other documentation URLs
     ]
     chunk_count = await indexer.index_documents(sources)
