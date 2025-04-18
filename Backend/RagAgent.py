@@ -216,7 +216,7 @@ async def main():
         name="assistant",
         model_client=model_client,
         memory=[doc_memory, pref_memory],
-        system_message="You are a helpful assistant that uses retrieved knowledge and user preferences"
+        system_message="You are a helpful assistant that uses retrieved knowledge and user preferences, if you cannot find in your dataset fetch from Rag database"
     )
 
     # Example query
