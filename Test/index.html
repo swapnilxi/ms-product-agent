@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsoft Product Description Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #0078d4;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        textarea, input, button {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        button {
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #106ebe;
+        }
+        .result {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #0078d4;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Microsoft Product Description Generator</h1>
+        
+        <div>
+            <label for="productIdea">Describe your Microsoft product idea:</label>
+            <textarea id="productIdea" placeholder="e.g., A new AI-powered feature for Microsoft Teams that automatically summarizes meetings..."></textarea>
+        </div>
+        
+        <div>
+            <label for="maxTurns">Number of refinement rounds (default: 2):</label>
+            <input type="number" id="maxTurns" min="1" max="5" value="2">
+        </div>
+        
+        <button id="generateBtn">Generate Description</button>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Generating your product description...</p>
+        </div>
+        
+        <div class="result" id="initialResult" style="display: none;">
+            <h3>Initial Description</h3>
+            <div id="initialDescription"></div>
+        </div>
+        
+        <div class="result" id="finalResult" style="display: none;">
+            <h3>Final Description</h3>
+            <div id="finalDescription"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('generateBtn').addEventListener('click', async function() {
+            const productIdea = document.getElementById('productIdea').value.trim();
+            const maxTurns = document.getElementById('maxTurns').value;
+            
+            if (!productIdea) {
+                alert('Please enter a product idea');
+                return;
+            }
+            
+            // Show loading spinner
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('initialResult').style.display = 'none';
+            document.getElementById('finalResult').style.display = 'none';
+            
+            try {
+                const response = await fetch('http://localhost:8001/generate-product-description/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        product_idea: productIdea,
+                        max_turns: parseInt(maxTurns)
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const data = await response.json();
+                
+                // Display results
+                document.getElementById('initialDescription').innerHTML = marked.parse(data.initial_description);
+                document.getElementById('finalDescription').innerHTML = marked.parse(data.final_description);
+                document.getElementById('initialResult').style.display = 'block';
+                document.getElementById('finalResult').style.display = 'block';
+                
+            } catch (error) {
+                alert('Error generating description: ' + error.message);
+                console.error('Error:', error);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        });
+        
+        // Simple markdown parser (you could use a proper library like marked.js)
+        function parseMarkdown(text) {
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // bold
+                .replace(/\*(.*?)\*/g, '<em>$1</em>') // italic
+                .replace(/^# (.*$)/gm, '<h2>$1</h2>') // h1
+                .replace(/^## (.*$)/gm, '<h3>$1</h3>') // h2
+                .replace(/\n/g, '<br>'); // line breaks
+        }
+    </script>
+    <!-- Include marked.js for proper markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</body>
+</html>
