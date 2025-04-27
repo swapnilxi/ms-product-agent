@@ -1,10 +1,18 @@
-from fastapi import FastAPI
-from mangum import Mangum
+from fastapi import FastAPI, BackgroundTasks
+
 import os
-from fastapi.middleware.cors import CORSMiddleware
+from mangum import Mangum
+from fastapi.middleware.cors import CORSMiddleware  
+import marketingAgent  
+import researchAgent
+import ProductAgent
+from agent_pipeline import research_to_marketing_flow
+
+
 
 # Initialize FastAPI app
 app = FastAPI()
+
 
 # CORS settings for allowing cross-origin requests
 app.add_middleware(
@@ -35,10 +43,45 @@ def agent2():
 def agent_chat():
     return {"message": "Agent chat triggered"}
 
+@app.get("/product-agent")
+async def product_agent(background_tasks: BackgroundTasks):
+    """Trigger the product agent as a background task."""
+    if ProductAgent is None:
+        return {"status": "Product agent is not available. please check the modules"}
+    
+    background_tasks.add_task(ProductAgent.main)
+    return {"status": "Product agent task started."}
+
+@app.get("/research-agent")
+async def research_agent(background_tasks: BackgroundTasks):
+    """Trigger the research agent as a background task."""
+    if researchAgent is None:
+        return {"status": "Research agent is not available. please check the modules"}
+    
+    background_tasks.add_task(researchAgent.main)
+    return {"status": "Research agent task started."}
+
+@app.get("/marketing-agent")
+async def marketing_agent(background_tasks: BackgroundTasks):
+    """Trigger the marketing agent as a background task."""
+    if marketingAgent is None:
+        return {"status": "Marketing agent is not available. please check the modules"}
+    
+    background_tasks.add_task(marketingAgent.main)
+    return {"status": "Marketing agent task started."}
+
+@app.get("/run-pipeline")
+async def run_pipeline():
+    try:
+        print("Pipeline task started...")
+        await research_to_marketing_flow()
+        print("✅ Pipeline task completed!")
+        return {"status": "success"}
+    except Exception as e:
+        print("Error inside /run-pipeline:", e)
+        return {"status": "error", "detail": str(e)}
+        
 # Endpoint to handle dynamic items
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: str = None):
     return {"item_id": item_id, "q": q}
-
-# Handler for AWS Lambda integration using Mangum
-handler = Mangum(app)

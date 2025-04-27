@@ -1,0 +1,66 @@
+import asyncio
+from autogen_agentchat.agents import AssistantAgent
+from autogen_agentchat.teams import RoundRobinGroupChat
+from autogen_agentchat.conditions import TextMentionTermination
+from autogen_core import CancellationToken
+from autogen_ext.models.openai import OpenAIChatCompletionClient
+from autogen_agentchat.ui import Console
+
+# Initialize the model client
+model_client = OpenAIChatCompletionClient(
+    model="gemini-1.5-flash-8b",
+    api_key="AIzaSyC5ePg-ZsJfgePj7mTZxKglfuKGhPOmChU",
+)
+
+# Define Research Agent 1: Current business research
+research_agent_current = AssistantAgent(
+    name="research_agent_current",
+    model_client=model_client,
+    system_message="You are a research assistant. Provide detailed and up-to-date information about the CURRENT business operations of Microsoft and Samsung.",
+)
+
+# Define Research Agent 2: Future XR research
+research_agent_future = AssistantAgent(
+    name="research_agent_future",
+    model_client=model_client,
+    system_message="You are a research assistant. Explore and discuss the FUTURE plans of Microsoft and Samsung, especially in XR (Extended Reality) technologies.",
+)
+
+# Define Critic/Review Agent
+critic_agent = AssistantAgent(
+    name="critic_agent",
+    model_client=model_client,
+    system_message=(
+        "You are a review agent. Listen to the discussion between research agents. "
+        "If you feel you have gathered ENOUGH DATA and NUMBERS, at least 3 for a report from both of the agent, respond with 'ENOUGH INFO'."
+    ),
+)
+
+# Create a termination condition based on critic's approval
+termination_condition = TextMentionTermination(text="ENOUGH INFO")
+
+# Setup a group chat between all agents
+group_chat = RoundRobinGroupChat(
+    [research_agent_current, research_agent_future, critic_agent],
+    termination_condition=termination_condition,
+)
+
+async def run_research_agent(task: str, cancellation_token: CancellationToken):
+    await group_chat.reset()
+
+    chat_result = await group_chat.run(
+        task=task,
+        cancellation_token=cancellation_token,
+    )
+    for message in chat_result.messages:
+        print(f"[{message.source}] {message.content}\n")
+    
+    await model_client.close()
+
+    return chat_result  
+
+def main():
+    asyncio.run(run_research_agent())
+
+if __name__ == "__main__":
+    main()
