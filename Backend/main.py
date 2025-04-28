@@ -3,9 +3,9 @@ from fastapi import FastAPI, BackgroundTasks
 import os
 from mangum import Mangum
 from fastapi.middleware.cors import CORSMiddleware  
-import marketingAgent  
-import researchAgent
-import ProductAgent
+from productAgent import run_agent as run_product_agent
+from marketingAgent import run_agent as run_marketing_agent
+from researchAgent import run_agent as run_research_agent
 from agent_pipeline import research_to_marketing_flow
 
 
@@ -85,3 +85,7 @@ async def run_pipeline():
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: str = None):
     return {"item_id": item_id, "q": q}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8001)

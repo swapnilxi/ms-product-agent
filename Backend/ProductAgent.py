@@ -37,30 +37,33 @@ colab_agent = AssistantAgent(
 )
 
 # Define a termination condition that stops the task if the critic approves.
-text_termination = TextMentionTermination("APPROVE")
+termination_condition = TextMentionTermination("APPROVE")
 
 # Create a team with the primary and critic agents.
-team = RoundRobinGroupChat([Microsoft_product_agent, Samsung_product_agent,colab_agent], termination_condition=text_termination)
+team = RoundRobinGroupChat([Microsoft_product_agent, Samsung_product_agent,colab_agent], termination_condition=termination_condition)
 
-async def run_product_agent():
-    # Create a cancellation token
-    cancellation_token = CancellationToken()
-    
-    # Reset the team for a new task
+# Default task for standalone
+def get_default_task():
+    return "Let's collaborate on a new XR/VR product between Microsoft and Samsung."
+
+# Unified runner
+async def run_agent(task=None, cancellation_token=None):
     await team.reset()
-    
-    # Run the team chat and process messages
-    async for message in team.run_stream(
-        task="Let's collaborate on a new product.",
+
+    task = task or get_default_task()
+
+    chat_result = await team.run(
+        task=task,
         cancellation_token=cancellation_token
-    ):
-        if isinstance(message, TaskResult):
-            print("Stop Reason:", message.stop_reason)
-        else:
-            print(message)
+    )
+
+    for message in chat_result.messages:
+        print(f"[{message.source}] {message.content}\n")
+
+    return chat_result
 
 def main():
-    asyncio.run(run_product_agent())
+    asyncio.run(run_agent())
 
 if __name__ == "__main__":
     main()

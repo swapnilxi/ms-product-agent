@@ -1,3 +1,4 @@
+#marketing research agent
 import asyncio
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.teams import RoundRobinGroupChat
@@ -40,27 +41,33 @@ critic_agent = AssistantAgent(
 termination_condition = TextMentionTermination(text="ENOUGH INFO")
 
 # Setup a group chat between all agents
-group_chat = RoundRobinGroupChat(
+team = RoundRobinGroupChat(
     [research_agent_current, research_agent_future, critic_agent],
     termination_condition=termination_condition,
 )
 
-async def run_research_agent(task: str, cancellation_token: CancellationToken):
-    await group_chat.reset()
+# Default task for standalone
+def get_default_task():
+    return "Let's research and make a marketing plan for the new XR/VR product between Microsoft and Samsung. after researching the market and global product condition in Korea."
 
-    chat_result = await group_chat.run(
+# Unified runner
+async def run_agent(task=None, cancellation_token=None):
+    await team.reset()
+
+    task = task or get_default_task()
+
+    chat_result = await team.run(
         task=task,
-        cancellation_token=cancellation_token,
+        cancellation_token=cancellation_token
     )
+
     for message in chat_result.messages:
         print(f"[{message.source}] {message.content}\n")
-    
-    await model_client.close()
 
-    return chat_result  
+    return chat_result
 
 def main():
-    asyncio.run(run_research_agent())
+    asyncio.run(run_agent())
 
 if __name__ == "__main__":
     main()

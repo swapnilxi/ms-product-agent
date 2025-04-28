@@ -38,28 +38,36 @@ colab_market_agent = AssistantAgent(
 )
 
 # Define a termination condition that stops the task if the critic approves.
-text_termination = TextMentionTermination("APPROVE")
+termination_condition = TextMentionTermination("APPROVE")
+
 
 # Create a team with the primary and critic agents.
-team = RoundRobinGroupChat([Microsoft_market_agent, Samsung_market_agent,colab_market_agent], termination_condition=text_termination)
+team = RoundRobinGroupChat([Microsoft_market_agent, Samsung_market_agent,colab_market_agent], termination_condition=termination_condition)
 
-async def run_marketing_agent(task: List[TextMessage], cancellation_token: CancellationToken):
+
+# Default task for standalone
+def get_default_task():
+    return "Let's prepare a marketing plan on the new XR/VR product between Microsoft and Samsung. and also prepare a marketing plan in Korea."
+# Unified runner
+async def run_agent(task=None, cancellation_token=None):
     await team.reset()
+
+    task = task or get_default_task()
 
     chat_result = await team.run(
         task=task,
-        cancellation_token=cancellation_token,
+        cancellation_token=cancellation_token
     )
 
-    # 🖨️ Print the conversation nicely on console
     for message in chat_result.messages:
         print(f"[{message.source}] {message.content}\n")
 
     return chat_result
+
     
 
 def main():
-    asyncio.run(run_marketing_agent())
+    asyncio.run(run_agent())
 
 if __name__ == "__main__":
     main()
