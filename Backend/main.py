@@ -7,6 +7,9 @@ from productAgent import run_agent as run_product_agent
 from marketingAgent import run_agent as run_marketing_agent
 from researchAgent import run_agent as run_research_agent
 from agent_pipeline import run_full_pipeline
+from save_report import list_reports, get_report_path, delete_report
+from fastapi.responses import FileResponse
+
 
 
 
@@ -93,6 +96,38 @@ async def run_pipeline():
 
     except Exception as e:
         print("❌ Error in pipeline:", e)
+        return {"status": "error", "detail": str(e)}
+
+# List all reports
+@app.get("/get-reports")
+def get_reports():
+    try:
+        reports = list_reports()
+        return {"status": "success", "reports": reports}
+    except Exception as e:
+        return {"status": "error", "detail": str(e)}
+
+# Download specific report
+@app.get("/download-report/{filename}")
+def download_report(filename: str):
+    try:
+        report_path = get_report_path(filename)
+        if report_path:
+            return FileResponse(report_path, media_type="text/markdown", filename=filename)
+        else:
+            return {"status": "error", "detail": "Report not found."}
+    except Exception as e:
+        return {"status": "error", "detail": str(e)}
+#delete specific report
+@app.delete("/delete-report/{filename}")
+def delete_report_endpoint(filename: str):
+    try:
+        deleted = delete_report(filename)
+        if deleted:
+            return {"status": "success", "message": f"{filename} deleted."}
+        else:
+            return {"status": "error", "detail": "File not found."}
+    except Exception as e:
         return {"status": "error", "detail": str(e)}
     
 # Example dynamic item endpoint

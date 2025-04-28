@@ -24,3 +24,25 @@ def save_pipeline_report(results: dict, report_folder="reports"):
         f.write(md_content)
 
     return filepath
+
+# List all report files
+def list_reports(report_folder="reports"):
+    os.makedirs(report_folder, exist_ok=True)
+    files = [f for f in os.listdir(report_folder) if f.endswith(".md")]
+    return files
+
+# Get full path for a specific report
+def get_report_path(filename, report_folder="reports"):
+    filepath = os.path.join(report_folder, filename)
+    if os.path.exists(filepath):
+        return filepath
+    else:
+        return None
+# Delete a specific report  
+def delete_report(filename, report_folder="reports"):
+    filepath = os.path.join(report_folder, filename)
+    if os.path.exists(filepath):
+        os.remove(filepath)
+        return True
+    else:
+        return False
