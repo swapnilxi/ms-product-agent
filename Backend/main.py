@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from productAgent import run_agent as run_product_agent
 from marketingAgent import run_agent as run_marketing_agent
 from researchAgent import run_agent as run_research_agent
-from agent_pipeline import research_to_marketing_flow
+from agent_pipeline import run_full_pipeline
 
 
 
@@ -23,69 +23,89 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
-# Simple root route to check the app
+# Root Route
 @app.get("/")
 def root():
     return {"message": "Hello from FastAPI Lambda"}
 
-# Endpoint for agent1
-@app.get("/agent1")
-def agent1():
-    return {"agent": "Agent 1 triggered"}
-
-# Endpoint for agent2
-@app.get("/agent2")
-def agent2():
-    return {"agent": "Agent 2 triggered"}
-
-# Endpoint for chat
-@app.get("/chat")
-def agent_chat():
-    return {"message": "Agent chat triggered"}
-
-@app.get("/product-agent")
-async def product_agent(background_tasks: BackgroundTasks):
-    """Trigger the product agent as a background task."""
-    if ProductAgent is None:
-        return {"status": "Product agent is not available. please check the modules"}
-    
-    background_tasks.add_task(ProductAgent.main)
-    return {"status": "Product agent task started."}
-
-@app.get("/research-agent")
-async def research_agent(background_tasks: BackgroundTasks):
-    """Trigger the research agent as a background task."""
-    if researchAgent is None:
-        return {"status": "Research agent is not available. please check the modules"}
-    
-    background_tasks.add_task(researchAgent.main)
+# Standalone - Run Research Agent
+@app.get("/research-agent-test")
+async def research_agent_status(background_tasks: BackgroundTasks):
+    background_tasks.add_task(run_research_agent)
     return {"status": "Research agent task started."}
 
-@app.get("/marketing-agent")
-async def marketing_agent(background_tasks: BackgroundTasks):
-    """Trigger the marketing agent as a background task."""
-    if marketingAgent is None:
-        return {"status": "Marketing agent is not available. please check the modules"}
-    
-    background_tasks.add_task(marketingAgent.main)
-    return {"status": "Marketing agent task started."}
+@app.get("/research-agent")
+async def research_agent():
+    chat_result = await run_research_agent()
+    return {
+        "status": "success",
+        "messages": [
+            {"source": msg.source, "content": msg.content}
+            for msg in chat_result.messages
+        ]
+    }
 
+# Standalone - Run Product Agent
+@app.get("/product-agent")
+async def product_agent():
+    chat_result = await run_product_agent()
+    return {
+        "status": "success",
+        "messages": [
+            {"source": msg.source, "content": msg.content}
+            for msg in chat_result.messages
+        ]
+    }
+    
+# Standalone - Run Marketing Agent
+@app.get("/marketing-agent")
+async def marketing_agent():
+    chat_result = await run_marketing_agent()
+    return {
+        "status": "success",
+        "messages": [
+            {"source": msg.source, "content": msg.content}
+            for msg in chat_result.messages
+        ]
+    }
+# Full pipeline
 @app.get("/run-pipeline")
 async def run_pipeline():
     try:
-        print("Pipeline task started...")
-        await research_to_marketing_flow()
+        print("🚀 Pipeline task started...")
+
+        results = await run_full_pipeline()
+
         print("✅ Pipeline task completed!")
-        return {"status": "success"}
+
+        # Prepare structured frontend-friendly output
+        output = []
+        for stage, content in results.items():
+            output.append({
+                "stage": stage.replace('_', ' ').title(),  # e.g., research_output -> Research Output
+                "content": content
+            })
+
+        return {
+            "status": "success",
+            "pipeline_results": output
+        }
+
     except Exception as e:
-        print("Error inside /run-pipeline:", e)
+        print("❌ Error in pipeline:", e)
         return {"status": "error", "detail": str(e)}
-        
-# Endpoint to handle dynamic items
+    
+# Example dynamic item endpoint
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: str = None):
     return {"item_id": item_id, "q": q}
 
+# Uvicorn entrypoint for local testing
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+    
+
+
+
+
+

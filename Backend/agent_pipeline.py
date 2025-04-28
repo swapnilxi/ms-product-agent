@@ -27,7 +27,7 @@ async def run_agent_team(team, task, cancellation_token: CancellationToken):
 
     return chat_result
 
-async def research_to_marketing_flow():
+async def run_full_pipeline():
     cancellation_token = CancellationToken()
 
     results = {}

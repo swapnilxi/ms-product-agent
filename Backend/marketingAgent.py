@@ -54,16 +54,24 @@ async def run_agent(task=None, cancellation_token=None):
 
     task = task or get_default_task()
 
-    chat_result = await team.run(
+    # Collect messages during stream
+    messages = []
+    async for message in team.run_stream(
         task=task,
         cancellation_token=cancellation_token
-    )
+    ):
+        if isinstance(message, TaskResult):
+            print(f"✅ Task completed: {message.stop_reason}\n")
+        else:
+            print(f"[{message.source}] {message.content}\n")
+            messages.append(message)
 
-    for message in chat_result.messages:
-        print(f"[{message.source}] {message.content}\n")
+    # Create a ChatResult object manually
+    class ChatResult:
+        def __init__(self, messages):
+            self.messages = messages
 
-    return chat_result
-
+    return ChatResult(messages)
     
 
 def main():
