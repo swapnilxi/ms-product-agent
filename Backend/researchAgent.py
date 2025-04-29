@@ -6,6 +6,7 @@ from autogen_agentchat.conditions import TextMentionTermination
 from autogen_core import CancellationToken
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_agentchat.ui import Console
+from typing import List, Optional
 
 # Initialize the model client
 model_client = OpenAIChatCompletionClient(
@@ -48,7 +49,7 @@ team = RoundRobinGroupChat(
 
 # Default task for standalone
 def get_default_task():
-    return "Let's research and make a marketing plan for the new XR/VR product between Microsoft and Samsung. after researching the market and global product condition in Korea."
+    return "Let's research for making a marketing plan for the new XR/VR product between Microsoft and Samsung. after researching the market and global product condition in Korea."
 
 # Unified runner
 async def run_agent(task=None, cancellation_token=None):
@@ -65,6 +66,28 @@ async def run_agent(task=None, cancellation_token=None):
         print(f"[{message.source}] {message.content}\n")
 
     return chat_result
+
+async def run_agent_post(company1: str, company2: str, user_input: Optional[str] = None, task: str = None):
+    await team.reset()
+
+    final_task = (
+        f"Let's research for creating a marketing plan for a new collabrative product between {company1} and {company2} and make sure to consider their current relation and future potential and market in geographical condtion which user will be mentioning in below instruction.\n"
+        f"\n--- User Instruction ---\n{user_input.strip()}"
+    )
+
+    if task:
+        final_task += f"\n\n--- Context from Previous Agent(s) ---\n{task.strip()}"
+
+    chat_result = await team.run(
+        task=final_task,
+        cancellation_token=None
+    )
+
+    for message in chat_result.messages:
+        print(f"[{message.source}] {message.content}\n")
+
+    return chat_result
+
 
 def main():
     asyncio.run(run_agent())

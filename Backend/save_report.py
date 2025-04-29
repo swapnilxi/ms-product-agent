@@ -1,15 +1,19 @@
 # save_report.py
 import os
 from datetime import datetime
+import markdown2
+from weasyprint import HTML
 
 def save_pipeline_report(results: dict, report_folder="reports"):
     # Create reports folder if it doesn't exist
     os.makedirs(report_folder, exist_ok=True)
 
-    # Timestamp for filename
+    # Timestamp for filenames
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"pipeline_report_{timestamp}.md"
-    filepath = os.path.join(report_folder, filename)
+    filename_md = f"pipeline_report_{timestamp}.md"
+    filename_pdf = f"pipeline_report_{timestamp}.pdf"
+    filepath_md = os.path.join(report_folder, filename_md)
+    filepath_pdf = os.path.join(report_folder, filename_pdf)
 
     # Build Markdown content
     md_content = "# 📝 Pipeline Report\n\n"
@@ -19,11 +23,21 @@ def save_pipeline_report(results: dict, report_folder="reports"):
         md_content += f"## {key.replace('_', ' ').title()}\n\n"
         md_content += f"{value}\n\n---\n\n"
 
-    # Write to file
-    with open(filepath, "w", encoding="utf-8") as f:
+    # Save .md file
+    with open(filepath_md, "w", encoding="utf-8") as f:
         f.write(md_content)
 
-    return filepath
+    # Convert Markdown to HTML
+    html_content = markdown2.markdown(md_content)
+
+    # Save HTML as PDF
+    HTML(string=html_content).write_pdf(filepath_pdf)
+
+    print(f"✅ Markdown saved at: {filepath_md}")
+    print(f"✅ PDF saved at: {filepath_pdf}")
+
+    # Return both filenames for frontend reference
+    return  filename_md, filename_pdf
 
 # List all report files
 def list_reports(report_folder="reports"):

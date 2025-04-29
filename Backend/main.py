@@ -1,22 +1,31 @@
 from fastapi import FastAPI, BackgroundTasks
 
 import os
-from mangum import Mangum
+import uvicorn
+from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware  
-from productAgent import run_agent as run_product_agent
-from marketingAgent import run_agent as run_marketing_agent
-from researchAgent import run_agent as run_research_agent
+from productAgent import run_agent_post as run_product_agent
+from researchAgent import run_agent_post as run_research_agent
+from marketingAgent import run_agent_post as run_marketing_agent
+from productAgent import run_agent as run_product_agent_get
+from marketingAgent import run_agent as run_marketing_agent_get
+from researchAgent import run_agent as run_research_agent_get
 from agent_pipeline import run_full_pipeline
-from save_report import list_reports, get_report_path, delete_report
+from save_report import list_reports, get_report_path, delete_report, save_pipeline_report
 from fastapi.responses import FileResponse
-
-
+from typing import Optional
 
 
 # Initialize FastAPI app
 app = FastAPI()
 
-
+# Define the input model
+class AgentInput(BaseModel):
+    companyName1: str
+    companyName2: str
+    textInstruction: Optional[str] = None  
+    task: Optional[str] = None  
+    
 # CORS settings for allowing cross-origin requests
 app.add_middleware(
     CORSMiddleware,
@@ -29,17 +38,102 @@ app.add_middleware(
 # Root Route
 @app.get("/")
 def root():
-    return {"message": "Hello from FastAPI Lambda"}
+    return {"message": "Hello from FastAPI!"}
+
+#research agent
+@app.post("/research-agent")
+async def research_agent_dynamic(input: AgentInput):
+    chat_result = await run_research_agent(
+        company1=input.companyName1,
+        company2=input.companyName2,
+        user_input=input.textInstruction,
+        task=input.task 
+    )
+    return {
+        "status": "success",
+        "messages": [
+            {"source": msg.source, "content": msg.content}
+            for msg in chat_result.messages
+        ]
+    }
+
+@app.post("/product-agent")
+async def product_agent_dynamic(input: AgentInput):
+    chat_result = await run_product_agent(
+        company1=input.companyName1,
+        company2=input.companyName2,
+        user_input=input.textInstruction,
+        task=input.task 
+    )
+    return {
+        "status": "success",
+        "messages": [
+            {"source": msg.source, "content": msg.content}
+            for msg in chat_result.messages
+        ]
+    }
+
+@app.post("/marketing-agent")
+async def marketing_agent_dynamic(input: AgentInput):
+    chat_result = await run_marketing_agent(
+        company1=input.companyName1,
+        company2=input.companyName2,
+        user_input=input.textInstruction,
+        task=input.task 
+    )
+    return {
+        "status": "success",
+        "messages": [
+            {"source": msg.source, "content": msg.content}
+            for msg in chat_result.messages
+        ]
+    }
+
+#get api enpooints
+@app.post("/run-pipeline")
+async def run_pipeline_dynamic(input: AgentInput):
+    try:
+        print("Dynamic Pipeline started...")
+
+        results = await run_full_pipeline(
+            company1=input.companyName1,
+            company2=input.companyName2,
+            user_input=input.textInstruction
+        )
+
+        print("✅ Dynamic Pipeline completed!")
+
+        messages = [
+            {
+                "stage": stage.replace('_', ' ').title(),
+                "content": content
+            }
+            for stage, content in results.items()
+        ]
+        markdown_report, pdf_report = save_pipeline_report(results)
+
+        return {"status": "success", 
+                "messages": messages,
+                "markdown_report":markdown_report, 
+                "pdf_report": pdf_report,
+                }
+
+    except Exception as e:
+        print("Error in dynamic pipeline:", e)
+        return {"status": "error", "detail": str(e)}
+
+
+
 
 # Standalone - Run Research Agent
 @app.get("/research-agent-test")
 async def research_agent_status(background_tasks: BackgroundTasks):
-    background_tasks.add_task(run_research_agent)
+    background_tasks.add_task(run_research_agent_get)
     return {"status": "Research agent task started."}
 
-@app.get("/research-agent")
+@app.get("/research-agent-get")
 async def research_agent():
-    chat_result = await run_research_agent()
+    chat_result = await run_research_agent_get()
     return {
         "status": "success",
         "messages": [
@@ -49,9 +143,9 @@ async def research_agent():
     }
 
 # Standalone - Run Product Agent
-@app.get("/product-agent")
+@app.get("/product-agent-get")
 async def product_agent():
-    chat_result = await run_product_agent()
+    chat_result = await run_product_agent_get()
     return {
         "status": "success",
         "messages": [
@@ -61,9 +155,9 @@ async def product_agent():
     }
     
 # Standalone - Run Marketing Agent
-@app.get("/marketing-agent")
+@app.get("/marketing-agent-get")
 async def marketing_agent():
-    chat_result = await run_marketing_agent()
+    chat_result = await run_marketing_agent_get()
     return {
         "status": "success",
         "messages": [
@@ -72,7 +166,7 @@ async def marketing_agent():
         ]
     }
 # Full pipeline
-@app.get("/run-pipeline")
+@app.get("/run-pipeline-get")
 async def run_pipeline():
     try:
         print("🚀 Pipeline task started...")
@@ -95,7 +189,7 @@ async def run_pipeline():
         }
 
     except Exception as e:
-        print("❌ Error in pipeline:", e)
+        print("Error in pipeline:", e)
         return {"status": "error", "detail": str(e)}
 
 # List all reports
@@ -118,6 +212,15 @@ def download_report(filename: str):
             return {"status": "error", "detail": "Report not found."}
     except Exception as e:
         return {"status": "error", "detail": str(e)}
+#save report-pdf
+@app.get("/download-report-pdf/{filename}")
+def download_pdf(filename: str):
+    file_path = os.path.join("reports", filename)
+    if os.path.exists(file_path):
+        return FileResponse(file_path, media_type="application/pdf", filename=filename)
+    return {"status": "error", "detail": "PDF not found"}
+
+
 #delete specific report
 @app.delete("/delete-report/{filename}")
 def delete_report_endpoint(filename: str):
@@ -137,10 +240,4 @@ def read_item(item_id: int, q: str = None):
 
 # Uvicorn entrypoint for local testing
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-    
-
-
-
-
-
+    uvicorn.run(app, host="0.0.0.0", port=8003)

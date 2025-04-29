@@ -6,8 +6,8 @@ import { ChevronLeftIcon } from '@heroicons/react/24/solid';
 
 const companies = [
   "Microsoft",
-  "OpenAI",
   "Samsung",
+  "OpenAI",
   "Google",
   "Amazon",
   "Custom Entry",

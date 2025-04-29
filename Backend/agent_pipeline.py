@@ -27,15 +27,28 @@ async def run_agent_team(team, task, cancellation_token: CancellationToken):
 
     return chat_result
 
-async def run_full_pipeline():
+async def run_full_pipeline(company1=None, company2=None, user_input=None):
+    
     cancellation_token = CancellationToken()
 
     results = {}
     previous_message = None
+    # Generate initial task
+    if company1 and company2 and user_input:
+        initial_task = (
+            f"Think and make a collaborative product between {company1} and {company2}."
+            f"\n\nUser Instruction: {user_input.strip()}"
+        )
+    else:
+        # Default task
+        initial_task = "Think and make a collaborative product between Microsoft and Samsung in XR field."
 
     # Step 1: Run Research Agent
     # Research Agent
-    research_result = await researchAgent.run_agent(cancellation_token=cancellation_token)
+    research_result = await researchAgent.run_agent(
+        task=[TextMessage(content=initial_task, source="user")],
+        cancellation_token=cancellation_token
+    )
     research_message = research_result.messages[-1]
     results['research_output'] = research_message.content
     

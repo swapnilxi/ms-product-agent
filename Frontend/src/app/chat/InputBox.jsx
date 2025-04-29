@@ -19,7 +19,11 @@ export default function InputBox() {
       <input
         type="text"
         value={userInput}
-        onChange={(e) => setUserInput(e.target.value)}
+        onChange={(e) => {
+          const input = e.target.value;
+          setUserInput(input);
+          setUserInstruction(input); 
+        }}
         placeholder="Type your message..."
         className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
       />

@@ -7,6 +7,7 @@ from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_agentchat.ui import Console
 from autogen_core import CancellationToken
 from autogen_ext.models.openai import OpenAIChatCompletionClient
+from typing import List, Optional
 
 # Create an OpenAI model client.
 model_client = OpenAIChatCompletionClient(
@@ -61,6 +62,29 @@ async def run_agent(task=None, cancellation_token=None):
         print(f"[{message.source}] {message.content}\n")
 
     return chat_result
+
+async def run_agent_post(company1: str, company2: str, user_input: Optional[str] = None, task: str = None):
+    await team.reset()
+
+    # Combine both the user's instruction and previous task context if provided
+    final_task = (
+        f"Think and make a collabrative product between {company1} and {company2}\n\n"
+        f"User Instruction: {user_input.strip()}\n"
+    )
+    
+    if task:
+        final_task += f"\nContext from previous agent(s):\n{task.strip()}"
+
+    chat_result = await team.run(
+        task=final_task,
+        cancellation_token=None
+    )
+
+    for message in chat_result.messages:
+        print(f"[{message.source}] {message.content}\n")
+
+    return chat_result
+
 
 def main():
     asyncio.run(run_agent())
