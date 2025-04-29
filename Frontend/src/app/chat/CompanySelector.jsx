@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import { useChatStore } from '@/services/chatApi';
+import { ChevronLeftIcon } from '@heroicons/react/24/solid';
 
 const companies = [
+  "Microsoft",
   "OpenAI",
+  "Samsung",
   "Google",
   "Amazon",
-  "Microsoft",
   "Custom Entry",
 ];
 
@@ -18,9 +20,9 @@ export default function CompanySelector() {
 
   return (
     <div className="flex flex-col md:flex-row gap-4 px-2">
-      
+
       {/* Company 1 */}
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full gap-2">
         {!custom1 ? (
           <select
             value={company1}
@@ -32,9 +34,9 @@ export default function CompanySelector() {
                 setCompany1(e.target.value);
               }
             }}
-            className="border border-gray-500 p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white placeholder-white"
+            className="border border-gray-500 p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-400"
           >
-            <option value="">Select Company 1</option>
+            <option value="" className=''>Select Company 1</option>
             {companies.map((company) => (
               <option key={company} value={company}>
                 {company}
@@ -42,18 +44,30 @@ export default function CompanySelector() {
             ))}
           </select>
         ) : (
-          <input
-            type="text"
-            value={company1}
-            onChange={(e) => setCompany1(e.target.value)}
-            placeholder="Enter Company 1"
-            className="border border-gray-500 p-2 rounded-lg w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400"
-          />
+          <div className="flex items-center gap-2">
+
+            <input
+              type="text"
+              value={company1}
+              onChange={(e) => setCompany1(e.target.value)}
+              placeholder="Enter Company 1"
+              className="border border-gray-500 p-2 rounded-lg w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400"
+            />
+            <button
+              type="button"
+              title="Back to options"
+              onClick={() => setCustom1(false)}
+              className="p-1 rounded-full bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 transition"
+            >
+              <ChevronLeftIcon className="h-5 w-5 text-gray-700 dark:text-white" />
+            </button>
+
+          </div>
         )}
       </div>
 
       {/* Company 2 */}
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full gap-2">
         {!custom2 ? (
           <select
             value={company2}
@@ -65,9 +79,9 @@ export default function CompanySelector() {
                 setCompany2(e.target.value);
               }
             }}
-            className="border border-gray-500 p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white placeholder-white"
+            className="border border-gray-500 p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-400"
           >
-            <option value="">Select Company 2</option>
+            <option value="" className='placeholder-gray-400'>Select Company 2</option>
             {companies.map((company) => (
               <option key={company} value={company}>
                 {company}
@@ -75,13 +89,25 @@ export default function CompanySelector() {
             ))}
           </select>
         ) : (
-          <input
-            type="text"
-            value={company2}
-            onChange={(e) => setCompany2(e.target.value)}
-            placeholder="Enter Company 2"
-            className="border border-gray-500 p-2 rounded-lg w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400"
-          />
+          <div className="flex items-center gap-2">
+            
+            <input
+              type="text"
+              value={company2}
+              onChange={(e) => setCompany2(e.target.value)}
+              placeholder="Enter Company 2"
+              className="border border-gray-500 p-2 rounded-lg w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400"
+            />
+            <button
+              type="button"
+               title="Back to options"
+              onClick={() => setCustom2(false)}
+              className="p-1 rounded-full bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 transition"
+            >
+              <ChevronLeftIcon className="h-5 w-5 text-gray-700 dark:text-white" />
+            </button>
+
+          </div>
         )}
       </div>
 
