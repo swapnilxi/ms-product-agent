@@ -13,7 +13,7 @@ export default function ChatInterface() {
   }, [messages]);
 
   return (
-    <div className="border p-4 rounded h-96 overflow-y-scroll flex flex-col gap-2">
+    <div className="p-4 rounded h-full overflow-y-scroll flex flex-col gap-2">
       {messages.map((msg, idx) => (
         <MessageBubble key={idx} role={msg.role} content={msg.content} />
       ))}

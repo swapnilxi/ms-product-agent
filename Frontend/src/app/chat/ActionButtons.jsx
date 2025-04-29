@@ -1,41 +1,56 @@
 "use client";
-import React from 'react';
+
 import { useChatStore } from '@/services/chatApi';
-import { AGENT_ENDPOINTS, LABELS } from '@/config';
+import { AGENT_ENDPOINTS, LABELS } from '@/config'; // correct import path!
+import { RocketLaunchIcon, LightBulbIcon, ChartBarIcon, SparklesIcon } from '@heroicons/react/24/solid';
 
 export default function ActionButtons() {
   const { runAgent, loading } = useChatStore();
 
+  const buttons = [
+    {
+      label: LABELS.generateProductIdea,
+      endpoint: AGENT_ENDPOINTS.productAgent,
+      icon: LightBulbIcon,
+      bgColor: 'bg-blue-600',
+      hoverColor: 'hover:bg-blue-700',
+    },
+    {
+      label: LABELS.getResearchReport,
+      endpoint: AGENT_ENDPOINTS.researchAgent,
+      icon: ChartBarIcon,
+      bgColor: 'bg-indigo-600',
+      hoverColor: 'hover:bg-indigo-700',
+    },
+    {
+      label: LABELS.generateMarketingPlan,
+      endpoint: AGENT_ENDPOINTS.marketingAgent,
+      icon: SparklesIcon,
+      bgColor: 'bg-purple-600',
+      hoverColor: 'hover:bg-purple-700',
+    },
+    {
+      label: LABELS.runFullPipeline,
+      endpoint: AGENT_ENDPOINTS.runPipeline,
+      icon: RocketLaunchIcon,
+      bgColor: 'bg-green-600',
+      hoverColor: 'hover:bg-green-700',
+    },
+  ];
+
   return (
-    <div className="flex flex-wrap gap-4">
-      <button
-        onClick={() => runAgent(AGENT_ENDPOINTS.productAgent)}
-        disabled={loading}
-        className="border p-2 rounded bg-blue-500 text-white disabled:opacity-50"
-      >
-        {LABELS.generateProductIdea}
-      </button>
-      <button
-        onClick={() => runAgent(AGENT_ENDPOINTS.researchAgent)}
-        disabled={loading}
-        className="border p-2 rounded bg-blue-500 text-white disabled:opacity-50"
-      >
-        {LABELS.getResearchReport}
-      </button>
-      <button
-        onClick={() => runAgent(AGENT_ENDPOINTS.marketingAgent)}
-        disabled={loading}
-        className="border p-2 rounded bg-blue-500 text-white disabled:opacity-50"
-      >
-        {LABELS.generateMarketingPlan}
-      </button>
-      <button
-        onClick={() => runAgent(AGENT_ENDPOINTS.runPipeline)}
-        disabled={loading}
-        className="border p-2 rounded bg-green-600 text-white disabled:opacity-50"
-      >
-        {LABELS.runFullPipeline}
-      </button>
+    <div className="flex flex-wrap gap-4 justify-center">
+      {buttons.map(({ label, endpoint, icon: Icon, bgColor, hoverColor }) => (
+        <button
+          key={label}
+          onClick={() => runAgent(endpoint)}
+          disabled={loading}
+          className={`inline-flex items-center px-4 py-2 rounded-md text-white font-medium transition-colors duration-200 ${bgColor} ${hoverColor} disabled:opacity-50 disabled:cursor-not-allowed`}
+        >
+          <Icon className="h-5 w-5 mr-2" />
+          {label}
+        </button>
+      ))}
     </div>
   );
 }
