@@ -9,6 +9,9 @@ module.exports = {
     ],
     theme: {
       extend: {
+        animation: {
+          'fade-in': 'fadeIn 0.3s ease-in-out',
+        },
         colors: {
           background: 'var(--background)',
           foreground: 'var(--foreground)',

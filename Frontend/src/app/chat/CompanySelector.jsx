@@ -22,7 +22,7 @@ export default function CompanySelector() {
     <div className="flex flex-col md:flex-row gap-4 px-2">
 
       {/* Company 1 */}
-      <div className="flex flex-col w-full gap-2">
+      <div className="flex flex-col w-full gap-2 transition-all duration-300 ease-in-out">
         {!custom1 ? (
           <select
             value={company1}
@@ -34,7 +34,7 @@ export default function CompanySelector() {
                 setCompany1(e.target.value);
               }
             }}
-            className="border border-gray-500 p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-400"
+            className="border border-gray-500 p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-400 transition-all duration-300 ease-in-out animate-fade-in"
           >
             <option value="" className=''>Select Company 1</option>
             {companies.map((company) => (
@@ -51,7 +51,7 @@ export default function CompanySelector() {
               value={company1}
               onChange={(e) => setCompany1(e.target.value)}
               placeholder="Enter Company 1"
-              className="border border-gray-500 p-2 rounded-lg w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400"
+              className="border border-gray-500 p-2 rounded-lg w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 animate-fade-in"
             />
             <button
               type="button"
@@ -67,7 +67,7 @@ export default function CompanySelector() {
       </div>
 
       {/* Company 2 */}
-      <div className="flex flex-col w-full gap-2">
+      <div className="flex flex-col w-full gap-2 transition-all duration-300 ease-in-out">
         {!custom2 ? (
           <select
             value={company2}
@@ -79,7 +79,7 @@ export default function CompanySelector() {
                 setCompany2(e.target.value);
               }
             }}
-            className="border border-gray-500 p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-400"
+            className="border border-gray-500 p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-400 animate-fade-in"
           >
             <option value="" className='placeholder-gray-400'>Select Company 2</option>
             {companies.map((company) => (
@@ -96,7 +96,7 @@ export default function CompanySelector() {
               value={company2}
               onChange={(e) => setCompany2(e.target.value)}
               placeholder="Enter Company 2"
-              className="border border-gray-500 p-2 rounded-lg w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400"
+              className="border border-gray-500 p-2 rounded-lg w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 animate-fade-in"
             />
             <button
               type="button"
