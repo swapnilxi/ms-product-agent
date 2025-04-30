@@ -18,7 +18,7 @@ load_dotenv()
 # Create an OpenAI model client.
 model_client = OpenAIChatCompletionClient(
     model="gemini-1.5-flash-8b",
-    api_key=os.getenv("GEMINI_API_KEY"),    
+    api_key="AIzaSyB0MA1G96Vjp6WeZsoLhF5g96vhk-kb4BA",    
 )
 # Create the primary agent.
 Microsoft_market_agent = AssistantAgent(
