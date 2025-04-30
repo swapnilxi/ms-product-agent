@@ -1,0 +1,38 @@
+name: Deploy FastAPI to Azure Container Apps
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-docker.yml'
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build and push image to ACR
+        uses: azure/docker-login@v1
+        with:
+          login-server: myregistry.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build and push
+        run: |
+          docker build -t myregistry.azurecr.io/fastapi-agents:${{ github.sha }} ./backend
+          docker push myregistry.azurecr.io/fastapi-agents:${{ github.sha }}
+
+      - name: Deploy to Azure Container Apps
+        run: |
+          az containerapp update \
+            --name agents-api \
+            --resource-group my-rg \
+            --image myregistry.azurecr.io/fastapi-agents:${{ github.sha }}
