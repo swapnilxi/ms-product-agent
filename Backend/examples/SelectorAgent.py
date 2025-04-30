@@ -8,6 +8,18 @@ from autogen_agentchat.teams import SelectorGroupChat
 from autogen_agentchat.ui import Console
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 
+from dotenv import load_dotenv
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+
+# Create an OpenAI model client.
+model_client = OpenAIChatCompletionClient(
+    model="gemini-1.5-flash-8b",
+    api_key=os.getenv("GEMINI_API_KEY"),
+)
 # Note: This example uses mock tools instead of real APIs for demonstration purposes
 def search_web_tool(query: str) -> str:
     if "2006-2007" in query:
@@ -29,10 +41,7 @@ def percentage_change_tool(start: float, end: float) -> float:
 
 
 
-model_client = OpenAIChatCompletionClient(
-    model="gemini-1.5-flash-8b",
-    api_key="AIzaSyC5ePg-ZsJfgePj7mTZxKglfuKGhPOmChU",    
-)
+
 
 planning_agent = AssistantAgent(
     "PlanningAgent",

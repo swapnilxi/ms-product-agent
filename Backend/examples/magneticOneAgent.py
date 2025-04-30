@@ -10,11 +10,18 @@ from autogen_ext.agents.web_surfer import MultimodalWebSurfer
 # from autogen_agentchat.agents import CodeExecutorAgent
 # from autogen_ext.code_executors.local import LocalCommandLineCodeExecutor
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+
+
 
 async def main() -> None:
     model_client = OpenAIChatCompletionClient(
     model="gemini-1.5-flash-8b",
-    api_key="AIzaSyC5ePg-ZsJfgePj7mTZxKglfuKGhPOmChU",  )
+    api_key=os.getenv("GEMINI_API_KEY"),  )
 
 
     assistant = AssistantAgent(

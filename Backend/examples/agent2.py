@@ -8,6 +8,17 @@ from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_core.tools import FunctionTool
 
 from autogen_ext.tools.mcp import StdioServerParams, mcp_server_tools
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+
+# Create an OpenAI model client.
+model_client = OpenAIChatCompletionClient(
+    model="gemini-1.5-flash-8b",
+    api_key=os.getenv("GEMINI_API_KEY"),
+)
 
 fetch_mcp_server = StdioServerParams(command="uvx", args=["mcp-server-fetch"])
 #tools = mcp_server_tools(fetch_mcp_server)
@@ -31,11 +42,7 @@ async def initialize_agent() -> AssistantAgent:
     return agent
 
 
-# the `ChatCompletionClient` interface.
-model_client = OpenAIChatCompletionClient(
-    model="gemini-1.5-flash-8b",
-    api_key="AIzaSyC5ePg-ZsJfgePj7mTZxKglfuKGhPOmChU",    
-)
+
 
 
 

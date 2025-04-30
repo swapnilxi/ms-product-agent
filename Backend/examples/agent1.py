@@ -10,14 +10,21 @@ from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_agentchat.messages import TextMessage
 from autogen_agentchat.messages import MultiModalMessage
 from autogen_core import Image as AGImage
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
-# Define a model client. You can use other model client that implements
-# the `ChatCompletionClient` interface.
+# Create an OpenAI model client.
 model_client = OpenAIChatCompletionClient(
     model="gemini-1.5-flash-8b",
-    api_key="AIzaSyC5ePg-ZsJfgePj7mTZxKglfuKGhPOmChU",    
+    api_key=os.getenv("GEMINI_API_KEY"),
 )
+# Define a model client. You can use other model client that implements
+# the `ChatCompletionClient` interface.
+
+
 
 
 # Define a simple function tool that the agent can use.

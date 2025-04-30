@@ -7,11 +7,16 @@ from autogen_core import CancellationToken
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_agentchat.ui import Console
 from typing import List, Optional
+from dotenv import load_dotenv
+import os
 
-# Initialize the model client
+load_dotenv()
+
+
+# Create an OpenAI model client.
 model_client = OpenAIChatCompletionClient(
-    model="gemini-1.5-flash-8b",
-    api_key="AIzaSyC5ePg-ZsJfgePj7mTZxKglfuKGhPOmChU",
+    model="gpt-4o",
+    api_key=os.getenv("OPENAI_API_KEY"),
 )
 
 # Define Research Agent 1: Current business research

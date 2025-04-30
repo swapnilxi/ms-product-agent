@@ -29,9 +29,20 @@ from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.ui import Console
 from autogen_core.memory import Memory, MemoryContent, MemoryMimeType
 from autogen_ext.models.openai import OpenAIChatCompletionClient
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+
+# Create an OpenAI model client.
+model_client = OpenAIChatCompletionClient(
+    model="gemini-1.5-flash-8b",
+    api_key=os.getenv("GEMINI_API_KEY"),
+)
 
 # Configuration - Use your Neon connection string
-POSTGRES_DSN = "postgresql://neondb_owner:npg_MkPJB0Nn4jvT@ep-tiny-sea-a8a53w5y-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
+POSTGRES_DSN = os.getenv("POSTGRES_URL")
 
 class FreeEmbeddingModel:
     """Local embedding model using sentence-transformers"""
@@ -205,13 +216,7 @@ async def main():
         metadata={"category": "preferences", "type": "units"}
     ))
 
-    # Initialize AI components
-    # the `ChatCompletionClient` interface.
-    model_client = OpenAIChatCompletionClient(
-        model="gemini-1.5-flash-8b",
-        api_key="AIzaSyC5ePg-ZsJfgePj7mTZxKglfuKGhPOmChU",    
-    )
-    
+    # Initialize AI components    
     assistant = AssistantAgent(
         name="assistant",
         model_client=model_client,
@@ -220,7 +225,7 @@ async def main():
     )
 
     # Example query
-    stream = assistant.run_stream(task="What is desi chess factory?")
+    stream = assistant.run_stream(task="What is Microsoft product in XR domain?")
     await Console(stream)
 
     # Cleanup

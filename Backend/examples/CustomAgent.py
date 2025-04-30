@@ -18,6 +18,12 @@ from autogen_agentchat.teams import SelectorGroupChat
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
 from autogen_agentchat.teams import RoundRobinGroupChat
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+
 
 
 class GeminiAssistantAgent(BaseChatAgent):
@@ -26,7 +32,7 @@ class GeminiAssistantAgent(BaseChatAgent):
         name: str,
         description: str = "An agent that provides assistance with ability to use tools.",
         model: str = "gemini-1.5-flash-002",
-        api_key: str = "AIzaSyC5ePg-ZsJfgePj7mTZxKglfuKGhPOmChU",
+        api_key=os.getenv("GEMINI_API_KEY"),
         system_message: str
         | None = "You are a helpful assistant that can respond to messages. Reply with TERMINATE when the task has been completed.",
     ):

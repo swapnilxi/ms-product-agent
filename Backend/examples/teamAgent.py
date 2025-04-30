@@ -7,11 +7,16 @@ from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_agentchat.ui import Console
 from autogen_core import CancellationToken
 from autogen_ext.models.openai import OpenAIChatCompletionClient
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 
 # Create an OpenAI model client.
 model_client = OpenAIChatCompletionClient(
     model="gemini-1.5-flash-8b",
-    api_key="AIzaSyC5ePg-ZsJfgePj7mTZxKglfuKGhPOmChU",    
+    api_key=os.getenv("GEMINI_API_KEY"),
 )
 
 # Create the primary agent.

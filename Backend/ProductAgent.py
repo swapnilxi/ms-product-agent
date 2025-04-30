@@ -8,11 +8,19 @@ from autogen_agentchat.ui import Console
 from autogen_core import CancellationToken
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 from typing import List, Optional
+from dotenv import load_dotenv
+import os
 
-# Create an OpenAI model client.
+load_dotenv()
+
+# # Create an OpenAI model client.
+# model_client = OpenAIChatCompletionClient(
+#     model="gemini-1.5-flash-8b",
+#     api_key="AIzaSyC5ePg-ZsJfgePj7mTZxKglfuKGhPOmChU",    
+# )
 model_client = OpenAIChatCompletionClient(
-    model="gemini-1.5-flash-8b",
-    api_key="AIzaSyC5ePg-ZsJfgePj7mTZxKglfuKGhPOmChU",    
+    model="gpt-4o",
+    api_key=os.getenv("OPENAI_API_KEY"),
 )
 
 # Create the first marketing agent.
@@ -34,7 +42,7 @@ Samsung_product_agent = AssistantAgent(
 colab_agent = AssistantAgent(
     "collaborator",
     model_client=model_client,
-    system_message="Think and make a collabrative product of samsung and microsoft in xr and virtual reality. Respond with 'APPROVE' to when your feedbacks are addressed.",
+    system_message="Think and make a collabrative product of samsung and microsoft in xr and virtual reality. only respond with approve when each agent has spoken twice and you are satified with the product. then said approve in capital letters ",
 )
 
 # Define a termination condition that stops the task if the critic approves.
