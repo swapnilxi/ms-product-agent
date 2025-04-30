@@ -77,6 +77,8 @@ Thumbs.db
 /Backend/static/
 /Backend/media/
 /Backend/logs/
+/Backend/__pycache__/
+/Backend/reports/
 *.log
 *.sqlite3
 *.db
