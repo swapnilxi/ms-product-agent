@@ -1,17 +1,38 @@
 FROM python:3.11-slim
 
-# Set workdir
 WORKDIR /app
 
-# Install dependencies
-COPY backend/requirements.txt .
+# Install system packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libcairo2 \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libgdk-pixbuf2.0-0 \
+    libffi-dev \
+    libxml2 \
+    libxslt1.1 \
+    shared-mime-info \
+    fonts-liberation \
+    fonts-dejavu \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+# Install Python dependencies
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the app
-COPY backend/ .
+# Copy app files
+COPY . .
 
-# Expose FastAPI on port 8000
-EXPOSE 8003
+# Ensure reports folder exists
+RUN mkdir -p /app/reports
 
-# Run the app
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8003"]
+# Environment settings
+ENV PORT=8003
+ENV HOST=0.0.0.0
+ENV PYTHONUNBUFFERED=1
+
+EXPOSE ${PORT}
+
+# Start app with uvicorn (multi-worker, reverse proxy-aware)
+CMD ["uvicorn", "main:app", "--host=0.0.0.0", "--port=8003", "--workers=4", "--proxy-headers"]

@@ -13,15 +13,15 @@ import os
 
 load_dotenv()
 
-# # Create an OpenAI model client.
-# model_client = OpenAIChatCompletionClient(
-#     model="gemini-1.5-flash-8b",
-#     api_key="AIzaSyC5ePg-ZsJfgePj7mTZxKglfuKGhPOmChU",    
-# )
+# Create an OpenAI model client.
 model_client = OpenAIChatCompletionClient(
-    model="gpt-4o",
-    api_key=os.getenv("OPENAI_API_KEY"),
+    model="gemini-1.5-flash-8b",
+    api_key="AIzaSyB0MA1G96Vjp6WeZsoLhF5g96vhk-kb4BA",    
 )
+# model_client = OpenAIChatCompletionClient(
+#     model="gpt-4.1-nano",
+#     api_key=os.getenv("OPENAI_API_KEY"),
+# )
 
 # Create the first marketing agent.
 Microsoft_product_agent = AssistantAgent(
