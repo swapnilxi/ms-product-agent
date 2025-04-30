@@ -24,6 +24,3 @@ autogen-ext[openai]     # ensure OpenAI support is pulled in
 # --- Optional Tools ---
 Pillow>=9.0.0           # used if image generation or markdown-to-pdf has images
 
-# --- PDF/Markdown Generation (if using WeasyPrint or Markdown to PDF) ---
-markdown
-weasyprint              # for converting Markdown to PDF

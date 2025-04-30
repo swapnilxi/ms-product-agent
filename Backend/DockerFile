@@ -1,16 +1,25 @@
 FROM python:3.11-slim
 
-# Set workdir
+# Set working directory
 WORKDIR /app
 
-# Install dependencies
-COPY backend/requirements.txt .
+# Install system packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    shared-mime-info \
+    fonts-liberation \
+    fonts-dejavu \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements and install dependencies
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the app
-COPY backend/ .
+# Copy the app code
+COPY . .
 
-# Expose FastAPI on port 8000
+# Expose port (FastAPI will run on 8003)
 EXPOSE 8003
 
 # Run the app
