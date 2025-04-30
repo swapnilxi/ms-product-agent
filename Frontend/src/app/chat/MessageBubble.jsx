@@ -22,6 +22,7 @@ export default function MessageBubble({ role, content }) {
         ${isUser ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'} 
         break-words`}
       >
+        
         {!isUser && 
           <div className="text-sm font-semibold
            text-gray-700 mb-1 border-b-2 border-gray-300 pb-1 px-2 py-2">

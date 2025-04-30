@@ -103,13 +103,22 @@ async def run_pipeline_dynamic(input: AgentInput):
 
         print("✅ Dynamic Pipeline completed!")
 
+        role_mapping = {
+            "research_output": "research_agent",
+            "product_output": "product_agent",
+            "marketing_output": "marketing_agent"
+        }
+
         messages = [
             {
-                "stage": stage.replace('_', ' ').title(),
-                "content": content
+                "role": role_mapping[key],
+                "stage": key.replace("_", " ").title(),
+                "content": value
             }
-            for stage, content in results.items()
+            for key, value in results.items()
         ]
+
+
         markdown_report, pdf_report = save_pipeline_report(results)
 
         return {"status": "success", 
