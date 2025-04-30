@@ -15,8 +15,8 @@ load_dotenv()
 
 # Create an OpenAI model client.
 model_client = OpenAIChatCompletionClient(
-    model="gpt-4o",
-    api_key=os.getenv("OPENAI_API_KEY"),
+    model="gemini-1.5-flash-8b",
+    api_key=os.getenv("GEMINI_API_KEY"),    
 )
 
 # Define Research Agent 1: Current business research

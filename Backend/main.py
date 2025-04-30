@@ -119,12 +119,11 @@ async def run_pipeline_dynamic(input: AgentInput):
         ]
 
 
-        markdown_report, pdf_report = save_pipeline_report(results)
+        markdown_report = save_pipeline_report(results)
 
         return {"status": "success", 
                 "messages": messages,
                 "markdown_report":markdown_report, 
-                "pdf_report": pdf_report,
                 }
 
     except Exception as e:
@@ -221,7 +220,7 @@ def download_report(filename: str):
             return {"status": "error", "detail": "Report not found."}
     except Exception as e:
         return {"status": "error", "detail": str(e)}
-#save report-pdf
+#save report-pdf -- moved this on frontend
 @app.get("/download-report-pdf/{filename}")
 def download_pdf(filename: str):
     file_path = os.path.join("reports", filename)
