@@ -3,7 +3,8 @@ import axios from 'axios';
 
 // 1. Axios instance inside chatApi.js itself
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  // baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL:'http://fastapiaci123.centralus.azurecontainer.io:8003/docs#/default/research_agent_research_agent_get_get',
   timeout: 70000,
 });
 
