@@ -8,6 +8,7 @@ colabgen-report-links: https://drive.google.com/drive/folders/1iFzSJ8_4jZUz22yva
 video demo - https://streamyard.com/23za4m5wbj8d
 
 Deployed UI- https://happy-bay-02a0aa40f.6.azurestaticapps.net/
+
 Deployed BackendUrl - http://fastapiaci123.centralus.azurecontainer.io:8003/docs#/default/research_agent_research_agent_get_get
 
 in the end it will give you beautiful report with properly fromatted data  and  action plan
