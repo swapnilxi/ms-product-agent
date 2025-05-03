@@ -4,7 +4,7 @@ import axios from 'axios';
 // 1. Axios instance inside chatApi.js itself
 const apiClient = axios.create({
   // baseURL: process.env.NEXT_PUBLIC_API_URL,
-  baseURL:'http://fastapiaci123.centralus.azurecontainer.io:8003/docs#/default/research_agent_research_agent_get_get',
+  baseURL:'https://ms-product-backend.politedesert-4d05d312.eastus2.azurecontainerapps.io/',
   timeout: 70000,
 });
 
@@ -20,6 +20,7 @@ export const useChatStore = create((set, get) => ({
   setCompany1: (company) => set({ company1: company }),
   setCompany2: (company) => set({ company2: company }),
   setUserInput: (input) => set({ userInput: input }),
+  setLoading: (val) => set({ loading: val }),
 
   clearMessages: () => set({ messages: [] }),
 

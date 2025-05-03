@@ -1,0 +1,8 @@
+properties:
+  configuration:
+    ingress:
+      external: true
+      targetPort: 8003
+      exposedPort: 8003
+      transport: tcp
+      allowInsecure: false

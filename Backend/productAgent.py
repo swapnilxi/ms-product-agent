@@ -2,7 +2,7 @@ import asyncio
 
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.base import TaskResult
-from autogen_agentchat.conditions import ExternalTermination, TextMentionTermination
+from autogen_agentchat.conditions import MaxMessageTermination,ExternalTermination, TextMentionTermination
 from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_agentchat.ui import Console
 from autogen_core import CancellationToken
@@ -46,7 +46,9 @@ colab_agent = AssistantAgent(
 )
 
 # Define a termination condition that stops the task if the critic approves.
-termination_condition = TextMentionTermination("APPROVE")
+text_mention_termination = TextMentionTermination("APPROVE")
+max_messages_termination = MaxMessageTermination(max_messages=15)
+termination_condition = text_mention_termination |max_messages_termination
 
 # Create a team with the primary and critic agents.
 team = RoundRobinGroupChat([Microsoft_product_agent, Samsung_product_agent,colab_agent], termination_condition=termination_condition)

@@ -5,7 +5,15 @@ import { AGENT_ENDPOINTS, LABELS } from '@/config'; // correct import path!
 import { RocketLaunchIcon, LightBulbIcon, ChartBarIcon, SparklesIcon } from '@heroicons/react/24/solid';
 
 export default function ActionButtons() {
-  const { runAgent, loading } = useChatStore();
+  const { runAgent, loading, setLoading } = useChatStore();
+  const handleClick = async (endpoint) => {
+    setLoading(true);
+    try {
+      await runAgent(endpoint);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const buttons = [
     {
@@ -43,7 +51,7 @@ export default function ActionButtons() {
       {buttons.map(({ label, endpoint, icon: Icon, bgColor, hoverColor }) => (
         <button
           key={label}
-          onClick={() => runAgent(endpoint)}
+          onClick={() => handleClick(endpoint)}
           disabled={loading}
           className={`inline-flex items-center px-4 py-2 rounded-md text-white font-medium transition-colors duration-200 ${bgColor} ${hoverColor} disabled:opacity-50 disabled:cursor-not-allowed`}
         >
