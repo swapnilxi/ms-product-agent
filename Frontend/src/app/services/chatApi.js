@@ -1,10 +1,11 @@
 import { create } from 'zustand';
 import axios from 'axios';
+import { AGENT_ENDPOINTS } from '@/config';
 
 // 1. Axios instance inside chatApi.js itself
 const apiClient = axios.create({
-  // baseURL: process.env.NEXT_PUBLIC_API_URL,
-  baseURL:'https://ms-product-backend.politedesert-4d05d312.eastus2.azurecontainerapps.io/',
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  // baseURL:'https://ms-product-backend.politedesert-4d05d312.eastus2.azurecontainerapps.io/',
   timeout: 70000,
 });
 
@@ -66,6 +67,11 @@ export const useChatStore = create((set, get) => ({
       console.error("Agent run failed:", error);
       set({ loading: false, error: "Failed to run agent" });
     }
+  },
+  sendMessage: async () => {
+    await get().runAgent(AGENT_ENDPOINTS.runPipeline);
+    // will add more logic here in the future if needed
+  },
 
-  }
+
 }));
