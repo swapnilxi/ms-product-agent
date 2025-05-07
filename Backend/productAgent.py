@@ -47,7 +47,7 @@ colab_agent = AssistantAgent(
 
 # Define a termination condition that stops the task if the critic approves.
 text_mention_termination = TextMentionTermination("APPROVE")
-max_messages_termination = MaxMessageTermination(max_messages=15)
+max_messages_termination = MaxMessageTermination(max_messages=8)
 termination_condition = text_mention_termination |max_messages_termination
 
 # Create a team with the primary and critic agents.
