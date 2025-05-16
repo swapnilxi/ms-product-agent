@@ -3,6 +3,7 @@ fastapi
 uvicorn[standard]       # production-grade ASGI server
 python-dotenv           # for env file support
 aiofiles
+PyYAML
 
 # --- Async HTTP & Requests ---
 aiohttp>=3.8.0
